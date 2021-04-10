@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
-import Table from './table';
-
+import React, { Component } from "react";
+import Table from "./table";
 
 // Objetivo
-// 1. 
+// 1.
 
 // Tipos:
 //   label
@@ -14,100 +13,139 @@ import Table from './table';
 // CSS:
 //  alguma forma de configurar o grid template
 
-
 // Nova APP
 //  id
 //  name
 //  label
 //  logo
 //  url
-// 
-
-const components = [
-    { type: "table", render: ({ data, props }) => <Table data={data} {...props} /> }
-]
-
-function renderComponent(component) {
-    const ui = components.find(({ type }) => type === component.type)?.render(component)
-    console.log(component.name)
-    return <div key={component.name} style={{ gridArea: component.name }}> {ui}</ div>
-}
-
+//
 
 class AppUI extends Component {
-    state = {
-        ui: null,
-        webSocket: null
-    }
+  state = {
+    ui: null,
+    webSocket: null,
+  };
 
+  components = [
+    {
+      type: "table",
+      render: ({ name, data, props }) => (
+        <Table
+          customEvent={this.customEvent}
+          name={name}
+          data={data}
+          {...props}
+        />
+      ),
+    },
+  ];
 
-    appConnection() {
-        this.setState({ ui: null })
+  renderComponent(component) {
+    console.log(component);
+    const ui = this.components
+      .find(({ type }) => type === component.type)
+      ?.render(component);
+    return (
+      <div key={component.name} style={{ gridArea: component.name }}>
+        {" "}
+        {ui}
+      </div>
+    );
+  }
 
-        const { url } = this.props.app;
-        const webSocket = new Promise((resolve) => {
-            const webSocket = new WebSocket(url);
+  appConnection() {
+    this.setState({ ui: null });
 
-            webSocket.onopen = function (event) {
-                resolve(webSocket);
-            };
+    const { url } = this.props.app;
+    const webSocket = new Promise((resolve) => {
+      const webSocket = new WebSocket(url);
 
+      webSocket.onopen = function (event) {
+        resolve(webSocket);
+      };
 
-            webSocket.onclose = (event) => {
-                setTimeout(() => {
-                    this.appConnection()
-                }, 1000)
+      webSocket.onclose = (event) => {
+        setTimeout(() => {
+          this.appConnection();
+        }, 1000);
+      };
 
-            };
-
-            webSocket.onmessage = ({ data: message }) => {
-                const { event, data: ui } = JSON.parse(message)
-                switch (event) {
-                    case "uiload":
-                        this.setState({ ui })
-                        break;
-                }
-            };
-        })
-        this.setState({ webSocket })
-    }
-
-    async sendMessage() {
-        const { app } = this.props;
-        const ws = await this.state.webSocket;
-        ws.send(app.id);
-    }
-
-    componentDidUpdate(oldProps) {
-        const { app } = this.props;
-
-        if (app !== oldProps.app) {
-            this.appConnection();
+      webSocket.onmessage = ({ data: message }) => {
+        const { event, data } = JSON.parse(message);
+        console.log(event);
+        switch (event) {
+          case "handleUiLoad":
+            this.handleUiLoad(data);
+            break;
+          case "handleReload":
+            this.handleReload(data);
+            break;
         }
+      };
+    });
+    this.setState({ webSocket });
+  }
+
+  handleUiLoad(ui) {
+    this.setState({ ui });
+  }
+
+  handleReload(components) {
+    const { ui: oldUi } = this.state;
+    const ui = {
+      ...oldUi,
+      components: oldUi.components.map(({ name, ...rest }) => {
+        const { data: items } = components.find((d) => d.name === name) || {};
+        if (items) rest.data = items;
+        return { name, ...rest };
+      }),
+    };
+    console.log(components, ui);
+    this.setState({ ui });
+  }
+
+  customEvent = async (data) => {
+    const ws = await this.state.webSocket;
+    ws.send(JSON.stringify({ event: "custom", data }));
+  };
+
+  componentDidUpdate(oldProps) {
+    const { app } = this.props;
+
+    if (app !== oldProps.app) {
+      this.appConnection();
     }
+  }
 
-    componentDidMount() {
-        this.appConnection();
-    }
+  componentDidMount() {
+    this.appConnection();
+  }
 
-    render() {
-        const { ui } = this.state;
+  render() {
+    const { ui } = this.state;
 
-        if (!ui) return <div>Carregando interface...</div>
+    if (!ui) return <div>Carregando interface...</div>;
 
-        const { components, grid } = ui;
+    const { components, grid } = ui;
 
-        console.log(`'${grid?.layout.join("','")}'`)
-
-        return <div className="uiPanel" style={grid ?
-            {
+    return (
+      <div
+        className="uiPanel"
+        style={
+          grid
+            ? {
                 display: "grid",
-                gridTemplateAreas: `'${grid?.layout.join("' '")}'`
-
-            } : { display: "flex", flexWrap: "wrap" }}>
-            {ui && components?.map(((component) => renderComponent(component)))}
-        </div>;
-    }
+                gridGap: "5px",
+                gridTemplateAreas: `'${grid?.layout.join("' '")}'`,
+              }
+            : { display: "flex", flexWrap: "wrap" }
+        }
+      >
+        {ui && components?.map((component) => this.renderComponent(component))}
+      </div>
+    );
+  }
 }
 
 export default AppUI;

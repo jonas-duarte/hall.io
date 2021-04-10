@@ -2,8 +2,9 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
 }
 
 a {
@@ -15,8 +16,7 @@ a {
   box-sizing: border-box;
 }
 
-
-.uiPanel{
+.uiPanel {
   height: 100%;
   width: 100%;
 }
@@ -25,12 +25,12 @@ a {
   height: 100%;
   width: 100%;
   overflow: auto;
+  background-color: #ffffff22;
 }
 
 .tableComponent table {
   border-collapse: collapse;
   min-width: 100%;
-  background-color: #00000066;
   text-align: center;
 }
 
@@ -46,13 +46,15 @@ a {
   color: black;
   padding: 5px;
   border-right: 2px solid #ffffff44;
-  
-  
+
   background-color: #ffffff44;
 }
 
-.tableComponent tr:nth-child(2n) {  
+.tableComponent tr:nth-child(2n) {
   background-color: #ffffff22;
-
 }
 
+.tableComponent th:last-child,
+.tableComponent td:last-child {
+  border-right: none;
+}
