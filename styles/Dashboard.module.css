@@ -1,0 +1,49 @@
+.container {
+    height: 100vh;
+    width: 100vw;
+    background-color: #AA4465;
+
+    display: flex;
+}
+
+.apps {
+    height: 100%;
+    width: 64px;
+    background-color: #161925;
+    overflow-y: auto;
+}
+
+.apps > div {
+    height: 64px;
+    width: 64px;
+    border-bottom: 1px solid #ffffff40;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.apps > div:hover {
+    background-color: #ffffff20;
+}
+
+
+
+.apps > div > img,
+.apps > div > svg {
+    height: 56px;
+    width: auto;
+    max-width: 56px;
+}
+
+.app {
+    height: 100%;
+    width: calc(100% - 64px);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+}

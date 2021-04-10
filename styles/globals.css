@@ -14,3 +14,45 @@ a {
 * {
   box-sizing: border-box;
 }
+
+
+.uiPanel{
+  height: 100%;
+  width: 100%;
+}
+
+.tableComponent {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.tableComponent table {
+  border-collapse: collapse;
+  min-width: 100%;
+  background-color: #00000066;
+  text-align: center;
+}
+
+.tableComponent th {
+  color: white;
+  padding: 5px;
+  border-right: 2px solid #ffffff44;
+
+  background-color: #ffffff22;
+}
+
+.tableComponent td {
+  color: black;
+  padding: 5px;
+  border-right: 2px solid #ffffff44;
+  
+  
+  background-color: #ffffff44;
+}
+
+.tableComponent tr:nth-child(2n) {  
+  background-color: #ffffff22;
+
+}
+
